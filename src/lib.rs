@@ -110,9 +110,9 @@ pub fn convert_escaped(ansi_string: &str) -> Result<String, Error> {
 pub fn convert(input: &str, escaped: bool, optimized: bool) -> Result<String, Error> {
     let html = if escaped {
         let input = Esc(input).to_string();
-        html::ansi_to_html(&input, &ansi_regex())?
+        html::ansi_to_html(&input.replace("\n", "</br>"), &ansi_regex())?
     } else {
-        html::ansi_to_html(&input, &ansi_regex())?
+        html::ansi_to_html(&input.replace("\n", "</br>"), &ansi_regex())?
     };
 
     let html = if optimized { optimize(&html) } else { html };
@@ -122,6 +122,7 @@ pub fn convert(input: &str, escaped: bool, optimized: bool) -> Result<String, Er
 const ANSI_REGEX: &str = "\x1b(\\[[0-9;?]*[A-HJKSTfhilmnsu]|\\(B)";
 const OPT_REGEX_1: &str = "<span [~>]*></span>|<b></b>|<i></i>|<u></u>|<s></s>";
 const OPT_REGEX_2: &str = "</b><b>|</i><i>|</u><u>|</s><s>";
+const NEWLINE_REGEX: &str = "\n"
 
 #[cfg(not(feature = "once_cell"))]
 fn ansi_regex() -> Regex {
